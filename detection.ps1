@@ -43,13 +43,13 @@ if (($Desktop.FullName -notmatch "OneDrive") -OR ($Documents.FullName -notmatch 
 [bool]$DesktopIsPinned = ($Desktop.Attributes -band [FileAttributesEX]::Pinned) -eq [FileAttributesEX]::Pinned.Value__
 [bool]$DesktopIsUnPinned = ($Desktop.Attributes -band [FileAttributesEX]::Unpinned) -eq [FileAttributesEX]::Unpinned.Value__
 [bool]$DocumentsIsPinned = ($Documents.Attributes -band [FileAttributesEX]::Pinned) -eq [FileAttributesEX]::Pinned.Value__
-[bool]$DocumentsUnIsPinned = ($Documents.Attributes -band [FileAttributesEX]::Unpinned) -eq [FileAttributesEX]::Unpinned.Value__
-if ($DesktopIsPinned -and $DocumentsIsPinned -and (-not ($DesktopIsUnPinned -or $DocumentsUnIsPinned))) {
+[bool]$DocumentsIsUnPinned = ($Documents.Attributes -band [FileAttributesEX]::Unpinned) -eq [FileAttributesEX]::Unpinned.Value__
+if ($DesktopIsPinned -and $DocumentsIsPinned -and (-not ($DesktopIsUnPinned -or $DocumentsIsUnPinned))) {
     #Desktop and Documents are pinned check if Desktop subfolders and files are
     Get-ChildItem $Desktop,$Documents -Recurse | ForEach-Object {
         # Check if the item is Pinned and/or Unpinned
-        $isPinned = [bool](($_.Attributes -band [FileAttributesEX]::Pinned) -eq [FileAttributesEX]::Pinned)
-        $isUnpinned = [bool](($_.Attributes -band [FileAttributesEX]::Unpinned) -eq [FileAttributesEX]::Unpinned)
+        $isPinned = [bool](($_.Attributes -band [FileAttributesEX]::Pinned) -eq [FileAttributesEX]::Pinned.Value__)
+        $isUnpinned = [bool](($_.Attributes -band [FileAttributesEX]::Unpinned) -eq [FileAttributesEX]::Unpinned.Value__)
         if ((-not $isPinned) -or ($isUnpinned)) {
             Write-Output "FoldersUnpinned"
             exit 1
