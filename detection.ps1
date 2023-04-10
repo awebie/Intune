@@ -40,13 +40,13 @@ if (($Desktop.FullName -notmatch "OneDrive") -OR ($Documents.FullName -notmatch 
  }
 
 # Check Pinning for Documents and Desktop
-$DesktopIsPinned = ($Desktop.Attributes -band [FileAttributesEX]::Pinned) -eq [FileAttributesEX]::Pinned
-$DesktopIsUnPinned = ($Desktop.Attributes -band [FileAttributesEX]::Unpinned) -eq [FileAttributesEX]::Unpinned
-$DocumentsIsPinned = ($Documents.Attributes -band [FileAttributesEX]::Pinned) -eq [FileAttributesEX]::Pinned
-$DocumentsUnIsPinned = ($Documents.Attributes -band [FileAttributesEX]::Unpinned) -eq [FileAttributesEX]::Unpinned
+[bool]$DesktopIsPinned = ($Desktop.Attributes -band [FileAttributesEX]::Pinned) -eq [FileAttributesEX]::Pinned.Value__
+[bool]$DesktopIsUnPinned = ($Desktop.Attributes -band [FileAttributesEX]::Unpinned) -eq [FileAttributesEX]::Unpinned.Value__
+[bool]$DocumentsIsPinned = ($Documents.Attributes -band [FileAttributesEX]::Pinned) -eq [FileAttributesEX]::Pinned.Value__
+[bool]$DocumentsUnIsPinned = ($Documents.Attributes -band [FileAttributesEX]::Unpinned) -eq [FileAttributesEX]::Unpinned.Value__
 if ($DesktopIsPinned -and $DocumentsIsPinned -and (-not ($DesktopIsUnPinned -or $DocumentsUnIsPinned))) {
     #Desktop and Documents are pinned check if Desktop subfolders and files are
-    Get-ChildItem $Desktop.FullName,$Documents.FullName -Recurse | ForEach-Object {
+    Get-ChildItem $Desktop,$Documents -Recurse | ForEach-Object {
         # Check if the item is Pinned and/or Unpinned
         $isPinned = [bool](($_.Attributes -band [FileAttributesEX]::Pinned) -eq [FileAttributesEX]::Pinned)
         $isUnpinned = [bool](($_.Attributes -band [FileAttributesEX]::Unpinned) -eq [FileAttributesEX]::Unpinned)
@@ -56,10 +56,10 @@ if ($DesktopIsPinned -and $DocumentsIsPinned -and (-not ($DesktopIsUnPinned -or 
         }
     }
             # Got through the gauntlet everything is pinned
-            Write-Output "FoldersPinned"
+            Write-Output "ALLFoldersPinned"
             exit 0 
 }
 else {
-    Write-Output  "FoldersUnpinned"
+    Write-Output  "SubFoldersUnpinned"
     exit 1
 }

@@ -33,7 +33,7 @@ enum FileAttributesEX {
     RecallOnDataAccess = 0x00400000
 }
 # Set the Pinned attribute on the Desktop and Documents folders. Unpin if unpinned. Pinned if not Pinned
-$Desktop.FullName, $Documents.FullName | ForEach-Object {
+$Desktop, $Documents | ForEach-Object {
     try {
         #When an exception occurs the Current Pipe Gets overwritten. We need details of the error in our report.
     $CurrentItem = $_ 
