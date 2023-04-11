@@ -57,7 +57,7 @@ Get-ChildItem $Desktop.FullName, $Documents.FullName -Recurse | ForEach-Object {
 }
 if ($ErrorFiles.Count -ne 0) {
     $ErrorString = foreach ($File in $ErrorFiles) {
-        "$($File.substring($File.Length - ($env:OneDrive).Length))`n"
+        "$($File.substring(($env:OneDrive).Length))`n"
     }
     Write-Error "These files could not be Processed: $ErrorString)"  
     exit 98
