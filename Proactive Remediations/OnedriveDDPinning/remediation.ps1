@@ -36,26 +36,33 @@ enum FileAttributesEX {
 $Desktop, $Documents | ForEach-Object {
     try {
         #When an exception occurs the Current Pipe Gets overwritten. We need details of the error in our report.
-    $CurrentItem = $_ 
-    $CurrentItem.Attributes = ($CurrentItem.Attributes -band (-bnot [FileAttributesEX]::Unpinned)) -bor [FileAttributesEX]::Pinned
-    }Catch {
+        $CurrentItem = $_ 
+        $CurrentItem.Attributes = ($CurrentItem.Attributes -band (-bnot [FileAttributesEX]::Unpinned)) -bor [FileAttributesEX]::Pinned
+    }
+    Catch {
         Write-Error "Could Not pin $($CurrentItem.Name) root...`n$_"
         exit 99
     }
 }
-
 # Iterate through all items in the Desktop & Documents folder and its subfolders. Files created before the Root folder is pinned will not inherit the PINNED attribute. Hence the need.
 $ErrorFiles = New-Object System.Collections.ArrayList
 Get-ChildItem $Desktop.FullName, $Documents.FullName -Recurse | ForEach-Object {
     try {
-    $CurrentItem = $_ 
-    $CurrentItem.Attributes = ($CurrentItem.Attributes -band (-bnot [FileAttributesEX]::Unpinned)) -bor [FileAttributesEX]::Pinned
-    }catch {
-       $ErrorFiles.add($CurrentItem.FullName)
+        $CurrentItem = $_ 
+        $CurrentItem.Attributes = ($CurrentItem.Attributes -band (-bnot [FileAttributesEX]::Unpinned)) -bor [FileAttributesEX]::Pinned
+    }
+    catch {
+        $ErrorFiles.add($CurrentItem.FullName)
     }
 }
-
 if ($ErrorFiles.Count -ne 0) {
-    Write-Error "These files could not be Processed: $([string]$ErrorFiles -split " " -join "`n")"  
+    $ErrorString = foreach ($File in $ErrorFiles) {
+        "$($File.substring($File.Length - ($env:OneDrive).Length))`n"
+    }
+    Write-Error "These files could not be Processed: $ErrorString)"  
     exit 98
+}
+else {
+    Write-Output "Files Pinned Sucessfully"
+    exit 0
 }
